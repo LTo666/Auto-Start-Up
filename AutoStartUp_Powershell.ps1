@@ -1,7 +1,11 @@
+param (
+  [string]$startUpLogFilePath,
+  [string]$configFilePath
+)
+
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
-[String[]] $paths = "%Your 1st Project Folder Location%", "%Your 2nd Project Folder Location%"
-[string] $startUpLogFilePath = "%Your Start Up Powershell Log File Location%"
+$configFile = Get-Content $configFilePath
 
 [string] $processStartText = "Auto Start Up Powershell Script: Start"
 [string] $processEndText = "Auto Start Up Powershell Script: End"
@@ -14,8 +18,8 @@ function OpenProject {
 
 function WriteLog {
   param (
-    [Parameter(Mandatory = $true)] [string] $message
-    [Parameter(Mandatory = $true)] [string] $logFilePath,
+    [Parameter(Mandatory = $true)] [string] $message,
+    [Parameter(Mandatory = $true)] [string] $logFilePath
   )
   [string] $timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
   [string] $logMessage = "[$timeStamp] $message`n"
@@ -24,10 +28,10 @@ function WriteLog {
 
 WriteLog -message $processStartText -logFilePath $startUpLogFilePath
 
-Foreach ($path in $paths) { 
-  [string] $processText = "Open VS Code with location '$path'"
+Foreach ($line in $configFile) { 
+  [string] $processText = "Open VS Code with location '$line'"
   WriteLog -message $processText -logFilePath $startUpLogFilePath
-  OpenProject -location $path
+  OpenProject -location $line
 }
 
 WriteLog -message $processEndText -logFilePath $startUpLogFilePath
